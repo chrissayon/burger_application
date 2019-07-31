@@ -21,7 +21,13 @@ class BurgerBuilder extends Component{
             meat: 1
         },
         totalPrice: 4,
-        purchaseable: false
+        purchaseable: false, //For the order button disable
+        purchasing: false
+    }
+
+    //If method is triggered through event, this won't work properly
+    purchaseHandler = () => {
+        this.setState({purchasing: true})
     }
 
     //Update purchase
@@ -103,7 +109,7 @@ class BurgerBuilder extends Component{
 
         return (
             <React.Fragment>
-                <Modal>
+                <Modal show={this.state.purchasing}>
                     <OrderSummary ingredients={this.state.ingredients}/>
                 </Modal>
                 <Burger ingredients={this.state.ingredients} />        
@@ -113,6 +119,8 @@ class BurgerBuilder extends Component{
                     disabled={disabledInfo} //For disabling button
                     price={this.state.totalPrice}
                     purchaseable={this.state.purchaseable}
+                    ordered={this.purchaseHandler}
+
                 />
             </React.Fragment>
         );
