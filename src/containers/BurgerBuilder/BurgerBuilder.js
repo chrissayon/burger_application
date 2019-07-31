@@ -18,7 +18,24 @@ class BurgerBuilder extends Component{
             cheese: 2,
             meat: 1
         },
-        totalPrice: 4
+        totalPrice: 4,
+        purchaseable: false
+    }
+
+    //Update purchase
+    updatePurchaseState (ingredients) {
+
+        const sum = Object.keys(ingredients)
+            .map(igKey => {
+                return ingredients[igKey]
+            })
+            .reduce((sum, el) => {
+                return sum + el
+            }, 0);
+
+            this.setState({purchaseable: sum > 0 })
+            
+            //Obtain sum of all ingedients, if 0 then you order button unselectable
     }
 
     //Handler for ingredients on button press
@@ -40,7 +57,7 @@ class BurgerBuilder extends Component{
 
         //Set state
         this.setState({totalPrice: newPrice, ingredients: updatedIngredients})
-
+        this.updatePurchaseState(updatedIngredients);
     }
 
     removeIngredientHandler = (type) => {
@@ -66,6 +83,7 @@ class BurgerBuilder extends Component{
 
         //Set state
         this.setState({totalPrice: newPrice, ingredients: updatedIngredients})
+        this.updatePurchaseState(updatedIngredients);
     }
 
     render () {
@@ -89,6 +107,7 @@ class BurgerBuilder extends Component{
                     ingredientRemoved={this.removeIngredientHandler}
                     disabled={disabledInfo} //For disabling button
                     price={this.state.totalPrice}
+                    purchaseable={this.state.purchaseable}
                 />
             </React.Fragment>
         );
