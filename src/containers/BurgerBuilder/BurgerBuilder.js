@@ -117,11 +117,12 @@ class BurgerBuilder extends Component{
 
         return (
             <React.Fragment>
-                <Modal 
+                <Modal //For the summary page
                     show={this.state.purchasing}
                     modalClosed={this.purchaseCancelHandler}
                     >
-                    <OrderSummary 
+                    <OrderSummary
+                        totalPrice={this.state.totalPrice} 
                         purchaseCancelled={this.purchaseCancelHandler}
                         purchaseContinued={this.purchaseContinueHandler} 
                         ingredients={this.state.ingredients}/>
