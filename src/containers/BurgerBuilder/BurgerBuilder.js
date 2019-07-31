@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Burger from '../../components/Burger/Burger'
 import BuildControls from '../../components/Burger/BuildControls/BuildControls'
-import Modal from '../../components/Burger/UI/Modal/Modal';
+import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary'
 
 //Global variables usually all caps
@@ -98,6 +98,10 @@ class BurgerBuilder extends Component{
         this.updatePurchaseState(updatedIngredients);
     }
 
+    purchaseContinueHandler = () => {
+        alert('You continue!');
+    }
+
     render () {
         const disabledInfo = {
             ...this.state.ingredients
@@ -117,9 +121,13 @@ class BurgerBuilder extends Component{
                     show={this.state.purchasing}
                     modalClosed={this.purchaseCancelHandler}
                     >
-                    <OrderSummary ingredients={this.state.ingredients}/>
+                    <OrderSummary 
+                        purchaseCancelled={this.purchaseCancelHandler}
+                        purchaseContinued={this.purchaseContinueHandler} 
+                        ingredients={this.state.ingredients}/>
                 </Modal>
-                <Burger ingredients={this.state.ingredients} />        
+                <Burger
+                        ingredients={this.state.ingredients} />        
                 <BuildControls 
                     ingredientAdded={this.addIngredientHandler}
                     ingredientRemoved={this.removeIngredientHandler}
@@ -127,6 +135,7 @@ class BurgerBuilder extends Component{
                     price={this.state.totalPrice}
                     purchaseable={this.state.purchaseable}
                     ordered={this.purchaseHandler}
+
 
                 />
             </React.Fragment>
