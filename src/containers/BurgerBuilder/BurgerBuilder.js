@@ -17,16 +17,12 @@ const INGREDIENT_PRICES = {
 
 class BurgerBuilder extends Component{
     state = {
-        ingredients: {
-            salad: 1,
-            bacon: 1,
-            cheese: 2,
-            meat: 1
-        },
+        ingredients: null,
         totalPrice: 4,
         purchaseable: false, //For the order button disable
         purchasing: false,
-        loading: false
+        loading: false,
+        error: null
     }
 
     //If method is triggered through event, this won't work properly
@@ -129,6 +125,16 @@ class BurgerBuilder extends Component{
     
     }
 
+    componentDidMount () { //You can use constructor in component object will work too
+        axios.get('https://react-my-burger-2d38e.firebaseio.com/ingredients.json')
+            .then(response => {
+                this.setState({ingredients:response.data})
+            })
+            .catch(error => {
+                this.setState({error:true})
+            });
+    }
+
     render () {
         const disabledInfo = {
             ...this.state.ingredients
@@ -139,18 +145,37 @@ class BurgerBuilder extends Component{
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
 
-        let orderSummary = <OrderSummary
-        totalPrice={this.state.totalPrice} 
-        purchaseCancelled={this.purchaseCancelHandler}
-        purchaseContinued={this.purchaseContinueHandler} 
-        ingredients={this.state.ingredients}/>;
+        //Ridikulous
+        let orderSummary = null
+        
+        let burger = this.state.error? <p>Ingredients can't be loaded</p> : <Spinner />
+         
+        if (this.state.ingredients) {
+            burger = (
+            <React.Fragment>
+                <Burger
+                ingredients={this.state.ingredients} />        
+                <BuildControls 
+                    ingredientAdded={this.addIngredientHandler}
+                    ingredientRemoved={this.removeIngredientHandler}
+                    disabled={disabledInfo} //For disabling button
+                    price={this.state.totalPrice}
+                    purchaseable={this.state.purchaseable}
+                    ordered={this.purchaseHandler} />
+            </React.Fragment>)
+
+            orderSummary = ( <OrderSummary
+            totalPrice={this.state.totalPrice} 
+            purchaseCancelled={this.purchaseCancelHandler}
+            purchaseContinued={this.purchaseContinueHandler} 
+            ingredients={this.state.ingredients}/> );
+        }
 
         if (this.state.loading) {
             orderSummary = <Spinner />
         }
-        //console.log( disabledInfo)
 
-        // {salad:true, meat:false, ...}
+       
 
         return (
             <React.Fragment>
@@ -160,18 +185,7 @@ class BurgerBuilder extends Component{
                     >
                 { orderSummary }
                 </Modal>
-                <Burger
-                        ingredients={this.state.ingredients} />        
-                <BuildControls 
-                    ingredientAdded={this.addIngredientHandler}
-                    ingredientRemoved={this.removeIngredientHandler}
-                    disabled={disabledInfo} //For disabling button
-                    price={this.state.totalPrice}
-                    purchaseable={this.state.purchaseable}
-                    ordered={this.purchaseHandler}
-
-
-                />
+                {burger}
             </React.Fragment>
         );
     }
